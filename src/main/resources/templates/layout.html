@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title != null ? title + ' - CGRS' : 'Campus Grievance Redressal System'}">CGRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a th:href="@{/dashboard}">CGRS</a>
+            </div>
+            <div class="nav-menu">
+                <a th:href="@{/dashboard}" th:if="${#authentication != null}">Dashboard</a>
+                <a th:href="@{/grievance/new}" th:if="${#authentication != null && !#authorization.expression('hasRole(''ROLE_ADMIN'')')}">New Grievance</a>
+                <a th:href="@{/admin/dashboard}" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">Admin Panel</a>
+                <a th:href="@{/logout}" th:if="${#authentication != null}">Logout</a>
+                <a th:href="@{/login}" th:if="${#authentication == null}">Login</a>
+                <a th:href="@{/register}" th:if="${#authentication == null}">Register</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="main-content">
+        <div class="container">
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <div th:if="${message}" class="alert alert-info" th:text="${message}"></div>
+            
+            <div th:replace="${content}"></div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Campus Grievance Redressal System. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

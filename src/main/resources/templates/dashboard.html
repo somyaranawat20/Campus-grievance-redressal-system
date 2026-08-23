@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CGRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a th:href="@{/dashboard}">CGRS</a>
+            </div>
+            <div class="nav-menu">
+                <a th:href="@{/grievance/new}">New Grievance</a>
+                <a th:href="@{/logout}">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="main-content">
+        <div class="container">
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            
+            <div class="page-header">
+                <h1>Welcome, <span th:text="${user.fullName}">User</span>!</h1>
+                <a th:href="@{/grievance/new}" class="btn btn-primary">Submit New Grievance</a>
+            </div>
+            
+            <div class="stats-grid user-stats" th:if="${pendingCount != null}">
+                <div class="stat-card">
+                    <h3>Pending</h3>
+                    <p class="stat-number" th:text="${pendingCount}">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>In Progress</h3>
+                    <p class="stat-number" th:text="${inProgressCount}">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Resolved</h3>
+                    <p class="stat-number" th:text="${resolvedCount}">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Rejected</h3>
+                    <p class="stat-number" th:text="${rejectedCount}">0</p>
+                </div>
+            </div>
+            <p class="filter-note" th:if="${selectedTime != null}">
+                <strong>Viewing:</strong> <span th:text="${selectedTime}">time</span> period.
+            </p>
+            
+            <div class="filter-section" th:if="${pendingCount != null}">
+                <h2>Filter by Status</h2>
+                <div class="filter-buttons">
+                    <a th:href="@{/dashboard(time=${selectedTime})}" class="btn btn-secondary" 
+                       th:classappend="${selectedStatus == null ? 'btn-active' : ''}">All</a>
+                    <a th:href="@{/dashboard(status='PENDING', time=${selectedTime})}" class="btn btn-secondary"
+                       th:classappend="${selectedStatus == T(com.inn.cgrs.model.GrievanceStatus).PENDING ? 'btn-active' : ''}">Pending</a>
+                    <a th:href="@{/dashboard(status='IN_PROGRESS', time=${selectedTime})}" class="btn btn-secondary"
+                       th:classappend="${selectedStatus == T(com.inn.cgrs.model.GrievanceStatus).IN_PROGRESS ? 'btn-active' : ''}">In Progress</a>
+                    <a th:href="@{/dashboard(status='RESOLVED', time=${selectedTime})}" class="btn btn-secondary"
+                       th:classappend="${selectedStatus == T(com.inn.cgrs.model.GrievanceStatus).RESOLVED ? 'btn-active' : ''}">Resolved</a>
+                    <a th:href="@{/dashboard(status='REJECTED', time=${selectedTime})}" class="btn btn-secondary"
+                       th:classappend="${selectedStatus == T(com.inn.cgrs.model.GrievanceStatus).REJECTED ? 'btn-active' : ''}">Rejected</a>
+                </div>
+            </div>
+            <div class="filter-section" th:if="${pendingCount != null}">
+                <h2>Filter by Time</h2>
+                <div class="filter-buttons">
+                    <a th:href="@{/dashboard(status=${selectedStatus})}" class="btn btn-secondary"
+                       th:classappend="${selectedTime == null ? 'btn-active' : ''}">All Time</a>
+                    <a th:href="@{/dashboard(status=${selectedStatus}, time='DAILY')}" class="btn btn-secondary"
+                       th:classappend="${selectedTime == 'DAILY' ? 'btn-active' : ''}">Daily</a>
+                    <a th:href="@{/dashboard(status=${selectedStatus}, time='WEEKLY')}" class="btn btn-secondary"
+                       th:classappend="${selectedTime == 'WEEKLY' ? 'btn-active' : ''}">Weekly</a>
+                    <a th:href="@{/dashboard(status=${selectedStatus}, time='MONTHLY')}" class="btn btn-secondary"
+                       th:classappend="${selectedTime == 'MONTHLY' ? 'btn-active' : ''}">Monthly</a>
+                    <a th:href="@{/dashboard(status=${selectedStatus}, time='YEARLY')}" class="btn btn-secondary"
+                       th:classappend="${selectedTime == 'YEARLY' ? 'btn-active' : ''}">Yearly</a>
+                </div>
+            </div>
+            
+            <div class="grievances-section">
+                <h2>My Grievances</h2>
+                
+                <div th:if="${grievances == null || grievances.isEmpty()}" class="empty-state">
+                    <p>You haven't submitted any grievances yet.</p>
+                    <a th:href="@{/grievance/new}" class="btn btn-primary">Submit Your First Grievance</a>
+                </div>
+                
+                <div th:if="${grievances != null && !grievances.isEmpty()}" class="grievances-list">
+                    <div th:each="grievance : ${grievances}" class="grievance-card">
+                        <div class="grievance-header">
+                            <h3 th:text="${grievance.subject}">Subject</h3>
+                            <span class="status-badge" th:classappend="'status-' + ${grievance.status.name().toLowerCase()}" 
+                                  th:text="${grievance.status.displayName}">Status</span>
+                        </div>
+                        <div class="grievance-meta">
+                            <span class="category" th:text="${grievance.category.displayName}">Category</span>
+                            <span class="location" th:text="${grievance.location}">Location</span>
+                            <span class="date" th:text="${#temporals.format(grievance.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
+                        </div>
+                        <p class="grievance-description" th:text="${#strings.abbreviate(grievance.description, 150)}">Description</p>
+                        <a th:href="@{/grievance/view/{id}(id=${grievance.id})}" class="btn btn-secondary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - CGRS Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a th:href="@{/admin/dashboard}">CGRS Admin</a>
+            </div>
+            <div class="nav-menu">
+                <a th:href="@{/admin/dashboard}">Dashboard</a>
+                <a th:href="@{/admin/reports}">Reports</a>
+                <a th:href="@{/logout}">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>Reports & Analytics</h1>
+                <a th:href="@{/admin/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+
+            <!-- Download Report -->
+            <div class="reports-section download-report-section">
+                <h2>Download Grievances Report</h2>
+                <p class="report-description">Download all grievances as CSV for the selected period. Report includes current status and full details.</p>
+                <div class="download-buttons">
+                    <a th:href="@{/admin/reports/download(period='WEEK')}" class="btn btn-primary">Last Week</a>
+                    <a th:href="@{/admin/reports/download(period='MONTH')}" class="btn btn-primary">Last Month</a>
+                    <a th:href="@{/admin/reports/download(period='YEAR')}" class="btn btn-primary">Last Year</a>
+                </div>
+            </div>
+            
+            <!-- Overall Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Grievances</h3>
+                    <p class="stat-number" th:text="${totalGrievances}">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending</h3>
+                    <p class="stat-number" th:text="${pendingCount}">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>In Progress</h3>
+                    <p class="stat-number" th:text="${inProgressCount}">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Resolved</h3>
+                    <p class="stat-number" th:text="${resolvedCount}">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Rejected</h3>
+                    <p class="stat-number" th:text="${rejectedCount}">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Resolution Rate</h3>
+                    <p class="stat-number" th:text="${resolutionRate + '%'}">0%</p>
+                </div>
+            </div>
+            
+            <!-- Category-wise Statistics -->
+            <div class="reports-section">
+                <h2>Grievances by Category</h2>
+                <div class="category-stats">
+                    <div th:each="category : ${categories}" class="category-stat-item">
+                        <div class="category-info">
+                            <h4 th:text="${category.displayName}">Category</h4>
+                            <p class="category-description" th:text="${category.description}">Description</p>
+                        </div>
+                        <div class="category-count">
+                            <span class="stat-number" th:text="${categoryStats[category]}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Grievances -->
+            <div class="reports-section">
+                <h2>Recent Grievances</h2>
+                <div th:if="${recentGrievances == null || recentGrievances.isEmpty()}" class="empty-state">
+                    <p>No grievances found.</p>
+                </div>
+                
+                <div th:if="${recentGrievances != null && !recentGrievances.isEmpty()}" class="grievances-list">
+                    <div th:each="grievance : ${recentGrievances}" class="grievance-card">
+                        <div class="grievance-header">
+                            <h3 th:text="${grievance.subject}">Subject</h3>
+                            <span class="status-badge" th:classappend="'status-' + ${grievance.status.name().toLowerCase()}" 
+                                  th:text="${grievance.status.displayName}">Status</span>
+                        </div>
+                        <div class="grievance-meta">
+                            <span class="user" th:text="${grievance.user.fullName}">User</span>
+                            <span class="category" th:text="${grievance.category.displayName}">Category</span>
+                            <span class="location" th:text="${grievance.location}">Location</span>
+                            <span class="date" th:text="${#temporals.format(grievance.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
+                        </div>
+                        <p class="grievance-description" th:text="${#strings.abbreviate(grievance.description, 150)}">Description</p>
+                        <a th:href="@{/admin/grievance/{id}(id=${grievance.id})}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

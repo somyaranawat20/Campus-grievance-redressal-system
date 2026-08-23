@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Grievance - CGRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a th:href="@{/admin/dashboard}">CGRS Admin</a>
+            </div>
+            <div class="nav-menu">
+                <a th:href="@{/admin/dashboard}">Dashboard</a>
+                <a th:href="@{/logout}">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>Manage Grievance</h1>
+                <a th:href="@{/admin/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+            
+            <div class="grievance-details">
+                <div class="detail-card">
+                    <div class="detail-header">
+                        <h2 th:text="${grievance.subject}">Subject</h2>
+                        <span class="status-badge" th:classappend="'status-' + ${grievance.status.name().toLowerCase()}" 
+                              th:text="${grievance.status.displayName}">Status</span>
+                    </div>
+                    
+                    <div class="detail-info">
+                        <div class="info-item">
+                            <strong>Grievance ID:</strong>
+                            <span th:text="'#' + ${grievance.id}">#123</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Submitted By:</strong>
+                            <span th:text="${grievance.user.fullName + ' (' + grievance.user.email + ')'}">User</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Category:</strong>
+                            <span th:text="${grievance.category.displayName}">Category</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Location:</strong>
+                            <span th:text="${grievance.location}">Location</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Submitted:</strong>
+                            <span th:text="${#temporals.format(grievance.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3>Description</h3>
+                        <p th:text="${grievance.description}">Description</p>
+                    </div>
+                    
+                    <div class="detail-section" th:if="${grievance.imagePath != null && !grievance.imagePath.isEmpty()}">
+                        <h3>Image Proof</h3>
+                        <div class="image-container">
+                            <img th:src="@{'/' + ${grievance.imagePath}}" 
+                                 alt="Grievance Image" 
+                                 class="grievance-image"
+                                 onerror="this.style.display='none'">
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section" th:if="${grievance.adminRemarks != null && !grievance.adminRemarks.isEmpty()}">
+                        <h3>Previous Remarks</h3>
+                        <p th:text="${grievance.adminRemarks}">Remarks</p>
+                    </div>
+                </div>
+                
+                <div class="admin-action-card">
+                    <h3>Update Status</h3>
+                    <form th:action="@{/admin/grievance/{id}/update(id=${grievance.id})}" method="post">
+                        <div class="form-group">
+                            <label for="status">Status *</label>
+                            <select id="status" name="status" required>
+                                <option th:each="status : ${statuses}" 
+                                        th:value="${status.name()}" 
+                                        th:selected="${grievance.status == status}"
+                                        th:text="${status.displayName}">Status</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="remarks">Remarks</label>
+                            <textarea id="remarks" name="remarks" rows="4" 
+                                      placeholder="Add remarks or comments about this grievance..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

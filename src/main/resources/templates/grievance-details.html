@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grievance Details - CGRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a th:href="@{/dashboard}">CGRS</a>
+            </div>
+            <div class="nav-menu">
+                <a th:href="@{/dashboard}">Dashboard</a>
+                <a th:href="@{/logout}">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>Grievance Details</h1>
+                <a th:href="@{/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+            
+            <div class="grievance-details">
+                <div class="detail-card">
+                    <div class="detail-header">
+                        <h2 th:text="${grievance.subject}">Subject</h2>
+                        <span class="status-badge" th:classappend="'status-' + ${grievance.status.name().toLowerCase()}" 
+                              th:text="${grievance.status.displayName}">Status</span>
+                    </div>
+                    
+                    <div class="detail-info">
+                        <div class="info-item">
+                            <strong>Grievance ID:</strong>
+                            <span th:text="'#' + ${grievance.id}">#123</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Category:</strong>
+                            <span th:text="${grievance.category.displayName}">Category</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Location:</strong>
+                            <span th:text="${grievance.location}">Location</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Submitted:</strong>
+                            <span th:text="${#temporals.format(grievance.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
+                        </div>
+                        <div class="info-item" th:if="${grievance.updatedAt != null}">
+                            <strong>Last Updated:</strong>
+                            <span th:text="${#temporals.format(grievance.updatedAt, 'dd MMM yyyy HH:mm')}">Date</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3>Description</h3>
+                        <p th:text="${grievance.description}">Description</p>
+                    </div>
+                    
+                    <div class="detail-section" th:if="${grievance.imagePath != null && !grievance.imagePath.isEmpty()}">
+                        <h3>Image Proof</h3>
+                        <div class="image-container">
+                            <img th:src="@{'/' + ${grievance.imagePath}}" 
+                                 alt="Grievance Image" 
+                                 class="grievance-image"
+                                 onerror="this.style.display='none'">
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section" th:if="${grievance.adminRemarks != null && !grievance.adminRemarks.isEmpty()}">
+                        <h3>Admin Remarks</h3>
+                        <p th:text="${grievance.adminRemarks}">Remarks</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
