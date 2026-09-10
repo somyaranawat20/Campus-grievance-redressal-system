@@ -212,10 +212,8 @@ The system can be further enhanced with:
 
 * 📱 Mobile application support
 * 🤖 AI-based grievance classification
-* 🔔 Real-time notifications
 * 📊 Advanced analytics dashboard
 * 📧 Improved notification system
-* 📎 File and document attachments
 * 🔍 Advanced grievance search and filtering
 * ☁️ Cloud deployment
 * 🔐 Multi-factor authentication
